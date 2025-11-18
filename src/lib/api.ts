@@ -1,6 +1,6 @@
 import type { Workout, WorkoutSet, WorkoutSummary } from "@/types/api";
 
-const API = "http://localhost:5024"//process.env.NEXT_PUBLIC_API_URL!; // e.g. http://localhost:5000
+const API = process.env.NEXT_PUBLIC_API_URL!; // e.g. http://localhost:5000
 
 function assertOk(r: Response) {
 	if (!r.ok) throw new Error(`HTTP ${r.status}`);
