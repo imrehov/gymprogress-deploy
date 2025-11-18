@@ -19,12 +19,12 @@ export default function WorkoutPage() {
 			try {
 				const w = await getWorkout(id as string);
 				setWorkout(w);
-			} catch (err: any) {
+			} catch (err: unknown) {
 				console.error('Failed to load workout', err);
 				setError('Failed to load workout');
-				if (String(err?.message ?? '').includes('401')) {
-					router.push('/login');
-				}
+				// if (String(err?.message ?? '').includes('401')) {
+				// 	router.push('/login');
+				// }
 			}
 		})();
 	}, [id, router]);

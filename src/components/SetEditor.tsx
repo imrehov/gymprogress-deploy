@@ -6,7 +6,6 @@ import { createSet, deleteSet, deleteWorkout } from "@/lib/api";
 import type { Exercise, WorkoutSet } from '@/types/api';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 
 type Props = {
 	workoutId: string;
