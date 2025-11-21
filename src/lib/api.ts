@@ -77,4 +77,12 @@ export async function deleteSet(setId: string): Promise<void> {
 	assertOk(r);
 }
 
+export async function logout(): Promise<void> {
+	const r = await fetch(`${API}/v1/auth/logout`, {
+		method: "POST",
+		credentials: "include",
+	});
+	if (!r.ok) throw new Error(`Logout failed (${r.status})`);
+}
+
 
