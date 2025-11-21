@@ -4,17 +4,18 @@ import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 
-export default function LoginPage() {
+export default function RegisterPage() {
 	const router = useRouter();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [error, setError] = useState<string | null>(null);
+	const [error, setError] = useState<string[]>([]);
 	const [busy, setBusy] = useState(false);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		setBusy(true);
-		setError(null);
+		setError([]);
+
 
 		try {
 			const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/auth/register`, {
@@ -25,10 +26,22 @@ export default function LoginPage() {
 			});
 
 			if (!r.ok) {
-				setError('Cant register');
+				let msg = ["Registration failed."];
+
+				try {
+					const body = await r.json();
+					if (Array.isArray(body.errors)) msg = body.errors;
+				}
+				catch (_) { }
+				setError(msg);
+				setBusy(false);
 				return;
 			}
 			router.push('/workout-calendar');
+		} catch (err) {
+			setError(["Unexpected error occurred."]);
+
+
 		} finally {
 			setBusy(false);
 		}
@@ -52,11 +65,17 @@ export default function LoginPage() {
 				<input
 					className="border rounded px-2 py-1 w-full"
 					type="password"
-					placeholder="min. 6 characters"
+					placeholder="min 6 characters"
 					value={password}
 					onChange={e => setPassword(e.target.value)}
 				/>
-				{error && <p className="text-sm text-red-500">{error}</p>}
+				{error.length > 0 && (
+					<div className="space-y-1">
+						{error.map((e, idx) => (
+							<p key={idx} className="text-sm text-red-600">{e}</p>
+						))}
+					</div>
+				)}
 				<button
 					type="submit"
 					disabled={busy}
