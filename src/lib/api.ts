@@ -53,6 +53,7 @@ export async function renameWorkout(workoutId: string, notes: string) {
 	return r.json();
 }
 
+
 export async function getWorkout(id: string): Promise<Workout> {
 	const r = await fetch(`${API}/v1/workouts/${id}`, {
 		...opts,
@@ -82,6 +83,17 @@ export async function createSet(workoutId: string, payload: { exerciseId: string
 	return r.json();
 }
 
+export async function renameExercise(workoutId: string, exerciseId: string, name: string) {
+	const r = await fetch(`${API}/v1/workouts/${workoutId}/exercises/${exerciseId}`, {
+		...opts,
+		method: "PATCH",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ name }),
+	});
+	assertOk(r);
+
+	return r.json();
+}
 
 export async function deleteSet(setId: string): Promise<void> {
 	const r = await fetch(`${API}/v1/sets/${setId}`, {

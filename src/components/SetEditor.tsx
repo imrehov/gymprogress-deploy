@@ -9,10 +9,11 @@ import { Button } from '@/components/ui/button';
 
 type Props = {
 	workoutId: string;
+	initialNotes: string | null;
 	initialExercises: Exercise[];
 };
 
-export default function SetEditor({ workoutId, initialExercises }: Props) {
+export default function SetEditor({ workoutId, initialExercises, initialNotes }: Props) {
 	const router = useRouter();
 
 	//local optimistic state
@@ -25,6 +26,8 @@ export default function SetEditor({ workoutId, initialExercises }: Props) {
 	const [reps, setReps] = useState('');
 	const [weight, setWeight] = useState('');
 	const [rpe, setRpe] = useState('');
+	const [isRenamingWorkout, setIsRenamingWorkout] = useState(false);
+	const [workoutTitleDraft, setWorkoutTitleDraft] = useState(workout.notes ?? "");
 
 	const totalSets = useMemo(
 		() => exercises.reduce((acc, e) => acc + e.sets.length, 0),
