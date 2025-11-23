@@ -39,6 +39,20 @@ export async function createWorkout(payload: { date: string; notes?: string }) {
 	return r.json();
 }
 
+export async function renameWorkout(workoutId: string, notes: string) {
+	const r = await fetch(`${API}/v1/workouts/${workoutId}`, {
+		...opts,
+		method: 'PATCH',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ notes }),
+	});
+	if (!r.ok) {
+		const text = await r.text().catch(() => '');
+		throw new Error(`Failed to update (${r.status}) ${text}`);
+	}
+	return r.json();
+}
+
 export async function getWorkout(id: string): Promise<Workout> {
 	const r = await fetch(`${API}/v1/workouts/${id}`, {
 		...opts,
