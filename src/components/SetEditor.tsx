@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from 'next/navigation';
-import { createSet, deleteSet, deleteWorkout } from "@/lib/api";
+import { createSet, deleteSet, deleteWorkout, renameExercise, renameWorkout } from "@/lib/api";
 import type { Exercise, WorkoutSet } from '@/types/api';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -26,8 +26,10 @@ export default function SetEditor({ workoutId, initialExercises, initialNotes }:
 	const [reps, setReps] = useState('');
 	const [weight, setWeight] = useState('');
 	const [rpe, setRpe] = useState('');
+
+	const [notes, setNotes] = useState<string>(initialNotes ?? "");
 	const [isRenamingWorkout, setIsRenamingWorkout] = useState(false);
-	const [workoutTitleDraft, setWorkoutTitleDraft] = useState(workout.notes ?? "");
+	const [workoutTitleDraft, setWorkoutTitleDraft] = useState(notes);
 
 	const totalSets = useMemo(
 		() => exercises.reduce((acc, e) => acc + e.sets.length, 0),
@@ -93,8 +95,58 @@ export default function SetEditor({ workoutId, initialExercises, initialNotes }:
 		}
 	}
 
+	async function onSaveWorkoutTitle() {
+		try {
+			setBusy(true);
+			const updated = await renameWorkout(workoutId, workoutTitleDraft.trim() || "");
+			const newNotes = updated.notes ?? "";
+			setNotes(newNotes);
+			setWorkoutTitleDraft(newNotes);
+			setIsRenamingWorkout(false);
+		} finally {
+			setBusy(false);
+		}
+	}
+
 	return (
 		<section className="space-y6">
+			<div className="flex items-center justify-between gap-3">
+				{!isRenamingWorkout ? (
+					<>
+						<h1 className="text-2xl font-bold">
+							{notes.trim() || "Workout"}
+						</h1>
+						<Button
+							variant="secondary"
+							onClick={() => setIsRenamingWorkout(true)}
+							disabled={busy}
+						>
+							Rename workout
+						</Button>
+					</>
+				) : (
+					<div className="flex items-center gap-2 w-full">
+						<Input
+							value={workoutTitleDraft}
+							onChange={(e) => setWorkoutTitleDraft(e.target.value)}
+							autoFocus
+						/>
+						<Button onClick={onSaveWorkoutTitle} disabled={busy}>
+							Save
+						</Button>
+						<Button
+							variant="secondary"
+							onClick={() => {
+								setWorkoutTitleDraft(notes);
+								setIsRenamingWorkout(false);
+							}}
+							disabled={busy}
+						>
+							Cancel
+						</Button>
+					</div>
+				)}
+			</div>
 			{/* addset form*/}
 			<div className="flex justify-end">
 				<Button
